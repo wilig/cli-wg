@@ -1,0 +1,1309 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Command Line Applications in Rust</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <base href="">
+
+        <link rel="stylesheet" href="book.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+        <link rel="stylesheet" href="src/special-content.css">
+        
+
+        
+
+    </head>
+    <body class="light">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = 'light'; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li class="affix"><a href="index.html">Getting started</a></li><li><a href="tutorial/index.html"><strong aria-hidden="true">1.</strong> A command line app in 15 minutes</a></li><li><ol class="section"><li><a href="tutorial/setup.html"><strong aria-hidden="true">1.1.</strong> Project setup</a></li><li><a href="tutorial/cli-args.html"><strong aria-hidden="true">1.2.</strong> Parsing command line arguments</a></li><li><a href="tutorial/impl-draft.html"><strong aria-hidden="true">1.3.</strong> First implementation</a></li><li><a href="tutorial/errors.html"><strong aria-hidden="true">1.4.</strong> Nicer error reporting</a></li><li><a href="tutorial/output.html"><strong aria-hidden="true">1.5.</strong> Output for humans and machines</a></li><li><a href="tutorial/testing.html"><strong aria-hidden="true">1.6.</strong> Testing</a></li><li><a href="tutorial/packaging.html"><strong aria-hidden="true">1.7.</strong> Packaging and documentation</a></li></ol></li><li><a href="in-depth/index.html"><strong aria-hidden="true">2.</strong> In-depth topics</a></li><li><ol class="section"><li><a href="in-depth/signals.html"><strong aria-hidden="true">2.1.</strong> Signal handling</a></li><li><a href="in-depth/config-files.html"><strong aria-hidden="true">2.2.</strong> Using config files</a></li><li><a href="in-depth/exit-code.html"><strong aria-hidden="true">2.3.</strong> Exit codes</a></li><li><a href="in-depth/human-communication.html"><strong aria-hidden="true">2.4.</strong> Communicating with humans</a></li><li><a href="in-depth/machine-communication.html"><strong aria-hidden="true">2.5.</strong> Communicating with machines</a></li><li><a href="in-depth/docs.html"><strong aria-hidden="true">2.6.</strong> Rendering documentation for you CLI apps</a></li><li><a href="in-depth/packaging-distribution.html"><strong aria-hidden="true">2.7.</strong> Packaging apps and distributing them for different platforms</a></li></ol></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Command Line Applications in Rust</h1> 
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <a class="header" href="print.html#command-line-apps-in-rust" id="command-line-apps-in-rust"><h1>Command line apps in Rust</h1></a>
+<p>Rust is a statically compiled, fast language with great tooling and a rapidly growing ecosystem.
+That makes it a great fit for writing command line applications:
+They should be small, portable, and quick to run.
+Command line applications are also a great way to get started with learning Rust;
+or if you want to introduce Rust to your team!</p>
+<p>Writing a program with a simple command line interface (CLI)
+is great a exercise for a beginner
+who is new to the language and wants to get a feel for it.
+There are many aspects to this topic, though,
+that often only reveal themselves later on.</p>
+<p>This book is structure like this:
+We start with a quick tutorial,
+after which you’ll end up with a working CLI tool.
+You’ll be exposed to a few of the core concepts of Rust
+as well as the main aspects of CLI applications.
+What follows are chapters that go into more detail
+on some of these aspects.</p>
+<p>One last thing before we dive right into CLI applications:
+If you found an error in this book
+or want to help us write more content for it,
+you can find its source <a href="https://github.com/rust-lang-nursery/cli-wg">in the CLI WG repository</a>.
+We’d love to hear your feedback!
+Thank you!</p>
+<a class="header" href="print.html#learning-rust-by-writing-a-command-line-app-in-15-minutes" id="learning-rust-by-writing-a-command-line-app-in-15-minutes"><h1>Learning Rust by Writing a Command Line App in 15 Minutes</h1></a>
+<p>This short tutorial will guide you through writing
+a CLI (command line interface) application
+in <a href="https://rust-lang.org/">Rust</a>.
+It will take you roughly fifteen minutes;
+but feel free to skip parts you don’t need to know right now
+or jump in at any point.
+You’ll learn all the essentials about how to get going,
+and where to find more information.</p>
+<aside>
+<p><strong>Prerequisites:</strong>
+This tutorial does not replace a general introduction to programming,
+and expects you to be familiar with a few common concepts.
+You should be comfortable with using a command line/terminal.
+If you already know a few other languages,
+this can be a good first contact with Rust.</p>
+<p><strong>Getting help:</strong>
+If you at any point feel overwhelmed or confused with the features used,
+have a look at the extensive official documentation that comes with Rust,
+first and foremost the book,
+The Rust Programming Language.
+It comes with most Rust installations
+(<code>rustup doc</code>),
+and is available online on
+<a href="https://doc.rust-lang.org">doc.rust-lang.org</a>.</p>
+<p>You are also very welcome to ask questions –
+the Rust community is known to be friendly and helpful.
+Have a look at the
+<a href="https://www.rust-lang.org/en-US/community.html">community page</a>
+to see a list of places where people discuss Rust.</p>
+</aside>
+<p>What kind of project do you want to write?
+How about we start with something simple:
+Let’s write a small <code>grep</code> clone.
+That is a tool that we can give a string and a path
+and it’ll print only the lines that contain the given string.
+Let’s call it <code>grrs</code> (pronounced “grass”).</p>
+<p>In the end,
+we want to be able to run our tool like this:</p>
+<pre><code class="language-console">$ cat test.txt
+foo: 10
+bar: 20
+baz: 30
+$ grrs foo test.txt
+foo: 10
+$ grrs --help
+[some help text explaining the available options]
+</code></pre>
+<aside class="note">
+<p><strong>Note:</strong>
+This book is written for <a href="https://rust-lang-nursery.github.io/edition-guide/">Rust 2018</a>.
+The code examples can also be used on Rust 2015,
+but you might need to tweak them a bit;
+add <code>extern crate foo;</code> invocations, for example.</p>
+<p>At the time of this writing,
+to use Rust 2018 you have to use a nightly compiler version.
+Enable it by adding <code>edition = &quot;2018&quot;</code>
+to the <code>[package]</code> section of your <code>Cargo.toml</code> file
+(as well as write <code>cargo-features = [&quot;edition&quot;]</code> at the top of it).</p>
+</aside>
+<a class="header" href="print.html#project-setup" id="project-setup"><h1>Project setup</h1></a>
+<p>If you haven’t already,
+<a href="https://www.rust-lang.org/install.html">install Rust</a> on your computer
+(it should only take a few minutes).
+After that, open a terminal and navigate to the directory
+you want to put your application code into.</p>
+<p>If you’ve already seen the basic Rust tutorials,
+you might be inclined to start with <code>cargo new my-cool-app</code>.
+To save us some time,
+we’ll instead start with a CLI-specific template:
+<code>cargo generate --git https://github.com/rust-clique/cargo-template-cli</code>.
+When you run this, it’ll ask you for a project name
+(please enter “grrs”).</p>
+<aside class="todo">
+<p><strong>TODO:</strong>
+Create this template!
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/53">Issue #53</a></p>
+</aside>
+<p>If look at the newly created <code>grrs</code> directory,
+you’ll find a typical setup for a Rust project:</p>
+<ul>
+<li>A <code>Cargo.toml</code> file that contains metadata for our project,
+incl. a list of dependencies/external libraries we use.</li>
+<li>A <code>src/main.rs</code> file that is the entry point for our (main) binary.</li>
+<li>A <code>tests/</code> directory that will contain integration tests for our tool.</li>
+</ul>
+<p>If you can execute <code>cargo run</code> in the <code>grrs</code> directory
+and see it greet you, you’re all set up.</p>
+<a class="header" href="print.html#what-it-might-look-like" id="what-it-might-look-like"><h2>What it might look like</h2></a>
+<aside class="todo">
+<p><strong>TODO:</strong>
+Update asciinema to use cargo-generate.
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/53">Issue #53</a></p>
+</aside>
+<p><img src="./tutorial/setup.svg" alt="" /></p>
+<a class="header" href="print.html#parsing-command-line-arguments" id="parsing-command-line-arguments"><h1>Parsing command line arguments</h1></a>
+<p>A typical invocation of our CLI tool will look like this:
+<code>grrs foobar test.txt</code>.
+We expect our program to look at <code>test.txt</code>
+and print out the lines that contain <code>foobar</code>.
+But how do we get these two values?</p>
+<p>The text after the name of the program is often called
+the “command line arguments”,
+or “command line flags”
+(especially when they look like <code>--this</code>).
+Internally, the operating system usually represents them
+as a list of strings --
+roughly speaking, the get separated by spaces.
+There are many ways to think about these arguments,
+and how to parse them
+into something more easy to work with.
+You will also need to tell the users of your program
+which arguments they need to give
+and in which format they are expected.</p>
+<a class="header" href="print.html#cli-arguments-as-data-type" id="cli-arguments-as-data-type"><h2>CLI Arguments as data type</h2></a>
+<p>Instead of thinking about them as a bunch of text,
+it often pays off to think of CLI arguments as a custom data type
+that represents the inputs to your program.</p>
+<p>Look at <code>grrs foobar test.txt</code>:
+There are two arguments,
+first the <code>pattern</code> (the string to look for),
+and then the <code>path</code> (the file to look in).</p>
+<p>What more can we say about them?
+Well, for a start, both are required.
+We haven’t talked about any default values,
+so we expect our users to always provide two values.
+Further more, we can say a bit about their types:
+The pattern is expected to be a string,
+while the second argument is expect to be path to a file.</p>
+<p>In Rust, it is very common to structure programs around the data they deal with
+so this way of looking at CLI arguments fits very well.
+Let’s start with this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[derive(Debug)]
+struct Cli {
+    pattern: String,
+    path: std::path::PathBuf,
+}
+#}</code></pre></pre>
+<p>This defines a new structure (a <a href="https://doc.rust-lang.org/1.27.2/book/second-edition/ch05-00-structs.html"><code>struct</code></a>)
+that has two fields to store data in: <code>pattern</code>, and <code>path</code>.</p>
+<aside>
+<p><strong>Aside:</strong>
+<a href="https://doc.rust-lang.org/1.27.2/std/path/struct.PathBuf.html"><code>PathBuf</code></a> is like a <a href="https://doc.rust-lang.org/1.27.2/std/string/struct.String.html"><code>String</code></a> but for file system paths that works cross-platform.</p>
+</aside>
+<p>Now, we still need to get the actual arguments our program got into this form.
+One option would be manually parse the list of strings we get from the operating system
+and build the structure ourselves.
+It would looks something like this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let pattern = std::env::args().nth(1).expect(&quot;no pattern given&quot;);
+let path = std::env::args().nth(2).expect(&quot;no path given&quot;);
+let args = Cli {
+    pattern: pattern,
+    path: std::path::PathBuf::from(path),
+};
+#}</code></pre></pre>
+<p>This works, but it’s not very convenient.
+How would you deal with the requirement to support
+<code>--pattern=&quot;foo&quot;</code> or <code>--pattern &quot;foo&quot;</code>?
+How would you implement <code>--help</code>?</p>
+<a class="header" href="print.html#parsing-cli-arguments-with-clap" id="parsing-cli-arguments-with-clap"><h2>Parsing CLI Arguments with Clap</h2></a>
+<p>A much nicer way is to use one of the many available libraries.
+As you can see in the <code>src/main.rs</code> file,
+our templates already contains some code using <code>clap</code>,
+and in particular uses it’s “derive” feature.
+This is quite nice:
+All we have to do is annotate a struct
+and it’ll generate the code that parses the arguments into the fields.
+Let’s add our fields to the <code>Cli</code> struct in the template
+and also write some documentation comments along the way.
+It’ll look like this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+/// Search for a pattern in a file and display the lines that contain it.
+#[derive(Clap)]
+struct Cli {
+    /// The pattern to look for
+    pattern: String,
+    /// The path to the file to read
+    path: std::path::PathBuf,
+}
+#}</code></pre></pre>
+<aside class="todo">
+<p><strong>TODO:</strong>
+Ensure this works with clap3.
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/64">Issue #64</a></p>
+</aside>
+<p>Right below the <code>Cli</code> struct our template contains its <code>main</code> function.
+When the program starts, it will call this function.
+The first line is:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let args = Cli::from_args();
+#}</code></pre></pre>
+<p>This will try to parse the arguments into our <code>Cli</code> struct.</p>
+<p>But what if that fails?
+That’s the beauty of this approach:
+Clap knows which fields to expect,
+and what their expected format is.
+It can automatically generate a nice <code>--help</code> message,
+as well a give great errors
+to suggest you pass <code>--output</code> when you wrote <code>--putput</code>.</p>
+<aside class="note">
+<p><strong>Note:</strong>
+The <code>from_args</code> method is meant to be used in your <code>main</code> function.
+When it fails,
+it will print out an error or help message and exit the program.
+Don’t use it in other places!</p>
+</aside>
+<a class="header" href="print.html#this-is-what-it-may-look-like" id="this-is-what-it-may-look-like"><h2>This is what it may look like</h2></a>
+<p><img src="./tutorial/cli-args.svg" alt="" /></p>
+<aside class="todo">
+<p><strong>TODO:</strong>
+Use clap 3!
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/64">Issue #64</a></p>
+</aside>
+<a class="header" href="print.html#first-implementation-of-grrs" id="first-implementation-of-grrs"><h1>First implementation of <code>grrs</code></h1></a>
+<p>Right, now that we have our input data,
+we can start to write our actual tool.
+We’ll only work with <code>src/main.rs</code> for now.</p>
+<aside class="shortcut">
+<p><strong>Shortcut:</strong>
+If you skipped the CLI argument parsing chapter,
+you can put</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let path = &quot;test.txt&quot;;
+let pattern = &quot;foo&quot;;
+#}</code></pre></pre>
+<p>at the top of your file
+and replace <code>args.path</code> with <code>path</code>
+and <code>args.pattern</code> with <code>pattern</code>
+in the example code below.</p>
+</aside>
+<p>Let’s start by opening the file we got:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let content = std::fs::read_to_string(&amp;args.path)?;
+#}</code></pre></pre>
+<aside>
+<p><strong>Aside:</strong>
+If the file can’t be read,
+the question mark operator (<code>?</code>)
+will propagate the error and return from the function.
+It basically turns the line into this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let content = match std::fs::read_to_string(&amp;args.path) {
+    Ok(value) =&gt; value,
+    Err(error) =&gt; return error,
+};
+#}</code></pre></pre>
+<p>Read more about this in the
+<a href="https://doc.rust-lang.org/1.27.2/book/second-edition/ch09-00-error-handling.html">error handling chapter of the Rust book</a>.</p>
+</aside>
+<p>Now, let’s iterate over the lines
+and print each one that contains our pattern:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+for line in content.lines() {
+    if line.contains(&amp;args.pattern) {
+        println!(&quot;{}&quot;, line);
+    }
+}
+#}</code></pre></pre>
+<p>Give it a try: <code>cargo run -- main src/main.rs</code> should work now!</p>
+<aside>
+<p><strong>Aside:</strong>
+This is probably not the best implementation,
+as it will read the whole file into memory
+– however large the file may be!
+Feel free to optimize it!
+(One idea might be to use a <a href="https://doc.rust-lang.org/1.27.0/std/io/struct.BufReader.html"><code>BufReader</code></a>
+instead of <code>read_to_string()</code>.)</p>
+</aside>
+<a class="header" href="print.html#nicer-error-reporting" id="nicer-error-reporting"><h1>Nicer error reporting</h1></a>
+<p>We all can do nothing but accept the fact that errors will occur.
+And in contrast to many other languages,
+it’s very hard not to notice and deal with this reality
+when using Rust:
+As it doesn’t have exceptions,
+all possible error states are often encoded in the return types of functions.</p>
+<a class="header" href="print.html#results" id="results"><h2>Results</h2></a>
+<p>A function like <a href="https://doc.rust-lang.org/1.27.2/std/fs/fn.read_to_string.html"><code>read_to_string</code></a> doesn’t return a string.
+Instead, it returns a <a href="https://doc.rust-lang.org/1.27.2/std/result/index.html"><code>Result</code></a>
+that contains either
+a <code>String</code>
+or an error of some type
+(in this case <a href="https://doc.rust-lang.org/1.27.2/std/io/type.Result.html"><code>std::io::Error</code></a>).</p>
+<p>How do you know which it is?
+Since <code>Result</code> is an <code>enum</code>,
+you can use <code>match</code> to check which variant it is:</p>
+<pre><pre class="playpen"><code class="language-rust"># fn main() -&gt; Result&lt;(), Box&lt;std::error::Error&gt;&gt; {
+let result = std::fs::read_to_string(&quot;test.txt&quot;);
+match result {
+    Ok(content) =&gt; { println!(&quot;File content: {}&quot;, content); }
+    Err(error) =&gt; { println!(&quot;Oh noes: {}&quot;, error); }
+}
+# }
+</code></pre></pre>
+<aside>
+<p><strong>Aside:</strong>
+Not sure what enums are or how they work in Rust?
+<a href="https://doc.rust-lang.org/1.27.2/book/second-edition/ch06-00-enums.html">Check this chapter of the Rust book</a>
+to get up to speed.</p>
+</aside>
+<a class="header" href="print.html#unwrapping" id="unwrapping"><h2>Unwrapping</h2></a>
+<p>Now, we were able to access content of the file,
+but we can’t really do anything with it after the <code>match</code> block.
+For this, we’ll need to somehow deal with the error case.
+The challenge is that all arms of a <code>match</code> block need to return something of the same type.
+But there’s a need trick to get around that:</p>
+<pre><pre class="playpen"><code class="language-rust"># fn main() -&gt; Result&lt;(), Box&lt;std::error::Error&gt;&gt; {
+let result = std::fs::read_to_string(&quot;test.txt&quot;);
+let content = match result {
+    Ok(content) =&gt; { content },
+    Err(error) =&gt; { panic!(&quot;Can't deal with {}, just exit here&quot;, error); }
+};
+println!(&quot;file content: {}&quot;, content);
+# }
+</code></pre></pre>
+<p>We can use the String in <code>content</code> after the match block.
+If <code>result</code> were an error, the String wouldn’t exist.
+But since the program would exit before it ever reached a point where we use <code>content</code>,
+it’s fine.</p>
+<p>This may seem drastic,
+but it’s very convenient.
+If your program needs to read that file and can’t do anything if the file doesn’t exist,
+exiting is a valid strategy.
+There’s even a shortcut method on <code>Result</code>s, called <code>unwrap</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let content = std::fs::read_to_string(&quot;test.txt&quot;).unwrap();
+#}</code></pre></pre>
+<a class="header" href="print.html#no-need-to-panic" id="no-need-to-panic"><h2>No need to panic</h2></a>
+<p>Of course, aborting the program is not the only way to deal with errors.
+Instead of the <code>panic!</code>, we can also easily write <code>return</code>:</p>
+<pre><pre class="playpen"><code class="language-rust"># fn main() -&gt; Result&lt;(), Box&lt;std::error::Error&gt;&gt; {
+let result = std::fs::read_to_string(&quot;test.txt&quot;);
+let content = match result {
+    Ok(content) =&gt; { content },
+    Err(error) =&gt; { return Err(error); }
+};
+println!(&quot;file content: {}&quot;, content);
+# Ok(())
+# }
+</code></pre></pre>
+<p>This, however changes the return type our function needs.
+Indeed, there was something hidden in our examples all this time:
+The function signature this code lives in.
+And in this last example with <code>return</code>,
+it becomes important.
+Here’s the <em>full</em> example:</p>
+<pre><pre class="playpen"><code class="language-rust">fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let result = std::fs::read_to_string(&quot;test.txt&quot;);
+    let content = match result {
+        Ok(content) =&gt; { content },
+        Err(error) =&gt; { return Err(error); }
+    };
+    println!(&quot;file content: {}&quot;, content);
+    Ok(())
+}
+</code></pre></pre>
+<p>Our return type is a <code>Result</code>!
+This is why we can write <code>return Err(error);</code> in the second match arm.
+See how there is an <code>Ok(())</code> at the bottom?
+It’s the default return value of the function and means
+“Result is okay, and has no content”.</p>
+<aside>
+<p><strong>Aside:</strong>
+Why is this not written as <code>return Ok(());</code>?
+It easily could be – this is totally valid as well.
+The last expression of any block in Rust is its return value,
+and it is customary to omit needless <code>return</code>s.</p>
+</aside>
+<a class="header" href="print.html#question-mark" id="question-mark"><h2>Question Mark</h2></a>
+<p>Just like calling <code>.unwrap()</code> is a shortcut
+for the <code>match</code> with <code>panic!</code> in the error arm,
+we have another shortcut for the <code>match</code> that <code>return</code>s in the error arm:
+<code>?</code>.</p>
+<p>Thats’s right, a question mark.
+You can append this operator to a value of type <code>Result</code>,
+and Rust will internally expand this to something very similar to
+the <code>match</code> we just wrote.</p>
+<p>Give it a try:</p>
+<pre><pre class="playpen"><code class="language-rust">fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let content = std::fs::read_to_string(&quot;test.txt&quot;)?;
+    println!(&quot;file content: {}&quot;, content);
+    Ok(())
+}
+</code></pre></pre>
+<p>Very concise!</p>
+<aside>
+<p><strong>Aside:</strong>
+There are a few more things happening here,
+that are not required to understand to work with this.
+For example,
+the error type in our <code>main</code> function is <code>Box&lt;dyn std::error::Error&gt;</code>.
+But we’ve above seen that <code>read_to_string</code> returns a <a href="https://doc.rust-lang.org/1.27.2/std/io/type.Result.html"><code>std::io::Error</code></a>.
+This works because <code>?</code> actually expands to code to <em>convert</em> error types.</p>
+<p><code>Box&lt;dyn std::error::Error&gt;</code> is also an interesting type.
+It’s a <code>Box</code> that can contain <em>any</em> type
+that implements the standard <a href="https://doc.rust-lang.org/1.27.2/std/error/trait.Error.html">Error</a> trait.
+This means that basically all errors can be put into this box,
+so we can use <code>?</code> on all of the usual functions that return <code>Result</code>s.</p>
+</aside>
+<a class="header" href="print.html#providing-context" id="providing-context"><h2>Providing Context</h2></a>
+<p>The errors you get when using <code>?</code> in your <code>main</code> function are okay,
+but great they are not.
+For example:
+When you run <code>std::fs::read_to_string(&quot;test.txt&quot;)?</code>
+but the file <code>test.txt</code> doesn’t exist,
+you get this output:</p>
+<blockquote>
+<p>Error: Os { code: 2, kind: NotFound, message: “No such file or directory” }</p>
+</blockquote>
+<p>In cases where your code doesn’t literally contain the file name,
+it’d be very hard to tell which file was <code>NotFound</code>.</p>
+<aside class="todo">
+<p><strong>TODO:</strong> Replace <code>?</code> with <code>.with_context(|_| format!(&quot;could not read file {}&quot;, args.path))</code>
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/65">Issue #65</a></p>
+</aside>
+<a class="header" href="print.html#output" id="output"><h1>Output</h1></a>
+<a class="header" href="print.html#printing-hello-world" id="printing-hello-world"><h2>Printing “Hello World”</h2></a>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+println!(&quot;Hello World&quot;);
+#}</code></pre></pre>
+<p>Well, that was easy.
+Great, onto the next topic.</p>
+<a class="header" href="print.html#using-println" id="using-println"><h2>Using println</h2></a>
+<p>You can pretty much print all the things you like
+with the <code>println!</code> macro.
+This macro has some pretty amazing capabilities,
+but also a special syntax.
+It expects you to write a string literal as the first parameter,
+that contains placeholders that will be filled in
+by the values of the parameters that follow as further arguments.</p>
+<p>For example:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let x = 42;
+println!(&quot;My lucky number is {}.&quot;, x);
+#}</code></pre></pre>
+<p>will print</p>
+<pre><code class="language-console">My lucky number is 42.
+</code></pre>
+<p>The curly braces (<code>{}</code>) in the string above is one of these placeholders.
+This is the default placeholder type
+that tries to print the given value in a human readable way.
+For numbers and strings this works very well,
+but not all types can do that.
+This is why there is also a “debug representation”,
+that you can get by filling the braces of the placeholder like this: <code>{:?}</code>.</p>
+<p>For example,</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let xs = vec![1, 2, 3];
+println!(&quot;The list is: {:?}&quot;, xs);
+#}</code></pre></pre>
+<p>will print</p>
+<pre><code class="language-console">The list is: [1, 2, 3]
+</code></pre>
+<p>If you want your own data types to be printable for debugging and logging,
+you can in most cases add a <code>#[derive(Debug)]</code> above their definition.</p>
+<aside>
+<p><strong>Aside:</strong>
+The human readable printing is done using the <a href="https://doc.rust-lang.org/1.27.2/std/fmt/trait.Display.html"><code>Display</code></a> trait,
+debug output uses the <a href="https://doc.rust-lang.org/1.27.2/std/fmt/trait.Debug.html"><code>Debug</code></a> trait.
+You can find more information about the syntax you can use in <code>println!</code>
+in the <a href="https://doc.rust-lang.org/1.27.2/std/fmt/index.html">documentation for the <code>std::fmt</code> module</a>.</p>
+</aside>
+<a class="header" href="print.html#printing-errors" id="printing-errors"><h2>Printing errors</h2></a>
+<p>Printing errors should be done via <code>stderr</code>
+to make it easier for users
+and other tools
+to pipe their outputs to files
+or more tools.</p>
+<p>In Rust this is achieved
+with <code>println!</code> and <code>eprintln!</code>,
+the former printing to <code>stdout</code>
+and the latter to <code>stderr</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+println!(&quot;This is information&quot;);
+eprintln!(&quot;This is an error! :(&quot;);
+#}</code></pre></pre>
+<aside>
+<p><strong>Beware</strong>: Printing escape codes can be dangerous,
+putting the user’s terminal into a weird state.
+Always be careful when manually printing them!</p>
+<p>Ideally you should be using a crate like <code>ansi_term</code>
+when dealing with raw escape codes
+to make your (and your user’s) life easier.</p>
+</aside>
+<a class="header" href="print.html#a-note-on-printing-performance" id="a-note-on-printing-performance"><h2>A note on printing performance</h2></a>
+<p>Printing to the terminal is surprisingly slow!
+If you call things like <code>println!</code> in a loop,
+it can easily become a bottleneck in an otherwise fast program.
+To speed this up,
+there’s two things you can do.</p>
+<p>First,
+it helps to acquire a lock on <code>stdout</code> (or <code>stderr</code>)
+and use <code>writeln!</code> to print to it directly.
+This prevents the system from locking an unlocking <code>stdout</code> over and over again.</p>
+<p>Second,
+you might want to reduce the number of writes
+you actually “flush” to the terminal.
+<code>println!</code> tells the system to write to the terminal <em>every</em> time,
+because it is usual to print each new line.
+If you don’t need that,
+you can wrap your <code>stdout</code> handle in a <a href="https://doc.rust-lang.org/1.29.0/std/io/struct.BufWriter.html"><code>BufWriter</code></a>
+which by default buffers up to 8kB.
+(You can still call <code>.flush()</code> on this <code>BufWriter</code>
+when you want to print immediately.)</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+use std::io::{self, Write};
+
+let stdout = io::stdout(); // get the global stdout entity
+let handle = stdout.lock(); // acquire a lock on it
+let mut handle = io::BufWriter::new(handle); // optional: wrap that handle in a buffer
+writeln!(handle, &quot;foo: {}&quot;, 42); // add `?` if you care about errors here
+#}</code></pre></pre>
+<a class="header" href="print.html#showing-a-progress-bar" id="showing-a-progress-bar"><h2>Showing a progress bar</h2></a>
+<p>Some CLI applications run less than a second,
+others take minutes or hours.
+If you are writing one of the latter types of programs,
+you might want to show the user that something is happening.
+For this, you should try to printing useful status updates,
+ideally in a form that can be easily consumed.</p>
+<p>Using the <a href="https://crates.io/crates/indicatif">indicatif</a> crate,
+you can add progress bars
+and little spinners to your program.</p>
+<aside class="todo">
+<p><strong>TODO:</strong>
+Show an example like
+<a href="https://github.com/mitsuhiko/indicatif/blob/950091d1b1683a88e01c4d4975f591009f56322b/examples/log.rs">this</a>
+or <a href="https://github.com/ashleygwilliams/cargo-generate/blob/c18cba0b33764012e25288d43c6a8545222b96f4/src/main.rs#L95">this</a>.
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/67">Issue #67</a></p>
+</aside>
+<a class="header" href="print.html#logging" id="logging"><h2>Logging</h2></a>
+<p>To make it easier to understand what is happening in our program,
+we might want to add some log statements.
+This is usually easy while writing your application.
+But it will become super helpful when running this program again in half a year.</p>
+<aside class="todo">
+<p><strong>TODO:</strong>
+<code>log</code> crate: macros with similar syntax to <code>println</code>
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/68">Issue #68</a></p>
+</aside>
+<aside class="todo">
+<p><strong>TODO:</strong>
+crate for actual log output – which one?
+env_logger?
+Link to <code>../in-depth/human-communication.html</code>
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/68">Issue #68</a></p>
+</aside>
+<aside>
+<p><strong>Aside:</strong>
+Experience has shown that even mildly useful CLI programs can end up being used for years to come.
+(Especially if they were meant as a temporary solution.)
+If your application doesn’t work
+and someone (e.g., you, in the future) needs to figure out why,
+being able to pass <code>--verbose</code> to get additional log output
+can make the difference between minutes and hours of debugging.</p>
+</aside>
+<a class="header" href="print.html#testing" id="testing"><h1>Testing</h1></a>
+<p>Over the decades of people doing software development
+one truth has been found:
+Untested software rarely works.
+(Many people would go so far and add
+“Most tested software doesn’t work either.”
+But we are all optimists here, right?)
+So, to ensure that your program does what you expect it to do,
+it is wise to test it.</p>
+<p>One easy way to do that is
+to write a <code>README</code> file
+that describes what your program should do.
+And when you feel ready to make a new release,
+go through the <code>README</code> and ensure that
+the behavior is still as expected.
+You can make this a more rigorous exercise
+by also writing down how your program should react to erroneous inputs.</p>
+<p>Here’s another fancy idea:
+Write that <code>README</code> before you write the code.</p>
+<aside>
+<p><strong>Aside:</strong>
+Have a look at
+<a href="https://en.wikipedia.org/wiki/Test-driven_development">Test-driven development</a> (TDD)
+if you haven’t heard of it.</p>
+</aside>
+<a class="header" href="print.html#automated-testing" id="automated-testing"><h2>Automated testing</h2></a>
+<p>Now, this is all fine and dandy,
+but doing all of this manually?
+That can take a lot of time.
+At the same time,
+many people have come to enjoy telling computers to do things for them.
+Let’s talk about how to automate these tests.</p>
+<p>Rust has a built-in test framework,
+so let’s start by writing a first test:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[test]
+fn check_answer_validity() {
+    assert_eq!(answer(), 42);
+}
+#}</code></pre></pre>
+<p>You can put this snippet of code in pretty much any file
+and <code>cargo test</code> will find
+and run it.
+The key here is the <code>#[test]</code> attribute.
+It allows the build system to discover such functions
+and run them as tests,
+verifying that they don’t panic.</p>
+<aside class="exercise">
+<p><strong>Exercise for the reader:</strong>
+Make this test work.</p>
+<p>You should end up with output like the following:</p>
+<pre><code class="language-text">running 1 test
+test check_answer_validity ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+</code></pre>
+</aside>
+<p>Now that we’ve seen <em>how</em> we can write tests,
+we still need to figure out <em>what</em> to test.
+As you’ve seen it’s fairly easy to write assertions
+for functions.
+But a CLI application is often more than one function!
+Worse, it often deals with user input,
+reads files,
+and writes output.</p>
+<a class="header" href="print.html#making-your-code-testable" id="making-your-code-testable"><h2>Making your code testable</h2></a>
+<p>There are two complementary approaches to testing functionality:
+Testing the small units that you build your complete application from,
+these are called “unit tests”.
+There is also testing the final application “from the outside”
+called “black box tests” or “integration tests”.
+Let’s begin with the first one.</p>
+<p>To figure out what we should test,
+let’s see what our program features are.
+Mainly, <code>grrs</code> is supposed to print out the lines that match a given pattern.
+So, let’s write unit tests for <em>exactly this</em>:
+We want to ensure that our most important piece of logic works,
+and we want to do it in a way that is not dependent
+on any of the setup code we have around it
+(that deals with CLI arguments, for example).</p>
+<p>Going back to our <a href="../impl-draft.md">first implementation</a> of <code>grrs</code>,
+we added this block of code to the <code>main</code> function:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+// ...
+for line in content.lines() {
+    if line.contains(&amp;args.pattern) {
+        println!(&quot;{}&quot;, line);
+    }
+}
+#}</code></pre></pre>
+<p>Sadly, this is not very easy to test.
+First off all, it’s in the main function, so we can’t easily call it.
+This is easily fixed by moving this piece of code into a function:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+fn find_matches(content: &amp;str, pattern: &amp;str) {
+    for line in content.lines() {
+        if line.contains(pattern) {
+            println!(&quot;{}&quot;, line);
+        }
+    }
+}
+#}</code></pre></pre>
+<p>Now we can call this function in our test,
+and see what its output is:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[test]
+fn find_a_match() {
+    find_matches(&quot;lorem ipsum\ndolor sit amet&quot;, &quot;lorem&quot;);
+    assert_eq!( // uhhhh
+#}</code></pre></pre>
+<p>Or… can we?
+Right now, <code>find_matches</code> prints directly to <code>stdout</code>, i.e., the terminal.
+We can’t easily capture this in a test!
+This is a problem that often comes up
+when writing tests after the implementation:
+We have written a function that is firmly integrated
+in the context it is used in.</p>
+<aside class="note">
+<p><strong>Note:</strong>
+This is totally fine when writing small CLI applications.
+There’s no need to make everything testable!
+It is important to think about
+which parts of your code you might want to write unit tests for, however.
+While we’ll see that it’s easy to change this function to be testable,
+this is not always the case.</p>
+</aside>
+<p>Alright, how can we make this testable?
+We’ll need to capture the output somehow.
+Rust’s standard library has some neat abstractions
+for dealing with I/O (input/output)
+and we’ll make use of one called <a href="https://doc.rust-lang.org/1.28.0/std/io/trait.Write.html"><code>std::io::Write</code></a>.
+This is a trait that abstract over things we can write to,
+which includes strings but also <code>stdout</code>.</p>
+<aside class="note">
+<p><strong>Note:</strong>
+We could also make this function return a <code>String</code>,
+but that would change the behavior.
+Instead of writing to the terminal directly,
+it would then collect everything into a string,
+and dump all the results in one go at the end.</p>
+</aside>
+<p>Let’s change our function to also accept a parameter <code>writer</code>
+that implements <code>Write</code>.
+In our test, we can then supply a simple string
+to make assertions on.
+Instead of <code>println!(…)</code> we can just use <code>writeln!(writer, …)</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+fn find_matches&lt;W: Write&gt;(content: &amp;str, pattern: &amp;str, writer: &amp;mut W) {
+    for line in content.lines() {
+        if line.contains(pattern) {
+            writeln!(writer, &quot;{}&quot;, line);
+        }
+    }
+}
+#}</code></pre></pre>
+<p>Now we can test for the output:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[test]
+fn find_a_match() {
+    let mut result = String::new();
+    find_matches(&quot;lorem ipsum\ndolor sit amet&quot;, &quot;lorem&quot;, &amp;mut result);
+    assert_eq!(result, &quot;lorem ipsum\n&quot;);
+}
+#}</code></pre></pre>
+<p>To now use this in our application code,
+we have to change the call to <code>find_matches</code> in <code>main</code>
+by adding <a href="https://doc.rust-lang.org/1.28.0/std/io/fn.stdout.html"><code>&amp;mut std::io::stdout()</code></a> as the third parameter.</p>
+<aside class="exercise">
+<p><strong>Exercise for the reader:</strong>
+<a href="https://doc.rust-lang.org/1.28.0/std/macro.writeln.html"><code>writeln!</code></a> returns an <a href="https://doc.rust-lang.org/1.28.0/std/io/type.Result.html"><code>io::Result</code></a>. Add error handling to <code>find_matches</code>.</p>
+</aside>
+<p>We’ve just seen how to be make it easily testable,
+we have</p>
+<ol>
+<li>identified one of the core pieces of our application,</li>
+<li>put it into its own function,</li>
+<li>and made it more flexible.</li>
+</ol>
+<p>Even though the goal was to make it testable,
+the result we ended up with
+is actually a very idiomatic and reusable piece of Rust code.
+That’s awesome!</p>
+<a class="header" href="print.html#splitting-your-code-into-library-and-binary-targets" id="splitting-your-code-into-library-and-binary-targets"><h2>Splitting your code into library and binary targets</h2></a>
+<p>There’s one more step we can go here.
+So far we’ve put everything we wrote into the <code>src/main.rs</code> file.
+This means our current project produces a single binary.
+But we can also make our code available as a library, like this:</p>
+<ol>
+<li>Put the <code>find_matches</code> function into a new <code>src/lib.rs</code>.</li>
+<li>Add a <code>pub</code> in front of the <code>fn</code> (so it’s <code>pub fn find_matches</code>)
+to make it something that users of our library can access.</li>
+<li>Remove <code>find_matches</code> from <code>src/main.rs</code>,
+and instead add an <code>extern crate grrs;</code> on top.</li>
+<li>In the <code>fn main</code>, prepend the call to <code>find_matches</code> with <code>grrs::</code>,
+so it’s now <code>grrs::find_matches(…)</code>.
+This means it uses the function from the library we just wrote!</li>
+</ol>
+<p>The way Rust deals with projects is quite flexible
+and it’s a good idea to think about
+what to put into the library part of your crate early on.
+You can for example think about writing a library
+for your application-specific logic first
+and then use it in your CLI just like any other library.
+Or, if your project has multiple binaries,
+you can put the common functionality into the library part of that crate.</p>
+<aside class="note">
+<p><strong>Note:</strong>
+Speaking of putting everything into a <code>src/main.rs</code>:
+If we can continue to do that,
+it’ll become difficult to read.
+<a href="https://doc.rust-lang.org/book/2018-edition/ch07-00-modules.html">The module system</a>
+can help you structure and organize your code.</p>
+</aside>
+<a class="header" href="print.html#testing-cli-applications-by-running-them" id="testing-cli-applications-by-running-them"><h2>Testing CLI applications by running them</h2></a>
+<aside class="todo">
+<p><strong>TODO:</strong> Talk about using assert_cmd’s features to quickly run cargo binaries with different inputs and assert their outputs.
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/72">Issue #72</a></p>
+</aside>
+<aside class="todo">
+<p><strong>TODO:</strong> Talk about generating temp dirs with demo files.
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/72">Issue #72</a></p>
+</aside>
+<a class="header" href="print.html#packaging-and-rendering-documentation" id="packaging-and-rendering-documentation"><h1>Packaging and rendering documentation</h1></a>
+<p>If you feel confident that your program is ready to for other people to use,
+it is time to package it!</p>
+<aside class="todo">
+<p><strong>TODO:</strong> Talk about packaging on CI
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/69">Issue #69</a></p>
+</aside>
+<aside class="todo">
+<p><strong>TODO:</strong> Talk about automatically generating Man pages in a build script
+<a href="https://github.com/rust-lang-nursery/cli-wg/issues/70">Issue #70</a></p>
+</aside>
+<a class="header" href="print.html#in-depth-topics" id="in-depth-topics"><h1>In-depth topics</h1></a>
+<a class="header" href="print.html#signal-handling" id="signal-handling"><h1>Signal handling</h1></a>
+<a class="header" href="print.html#using-config-files" id="using-config-files"><h1>Using config files</h1></a>
+<p>Dealing with configurations can be annoying
+especially if you support multiple operating systems
+which all have their own places
+for short- and long-term files.</p>
+<p>There are multiple solutions to this,
+some being more low-level than others.</p>
+<p>The crate easiest to use is <code>confy</code>.
+It asks you for the name of your application
+and requires you to specify the config layout
+via a <code>struct</code> (that is <code>Serialize</code>, <code>Deserialize</code>)
+and it will figure out the rest!</p>
+<pre><pre class="playpen"><code class="language-rust">#[derive(Debug, Serialize, Deserialize)]
+struct MyConfig {
+    name: String,
+    comfy: bool,
+    foo: i64,
+}
+
+fn main() -&gt; Result&lt;(), io::Error&gt; {
+    let cfg: ConfyConfig = confy::load(&quot;my_app&quot;)?;
+    println!(&quot;{:#?}&quot;, cfg);
+    Ok(())
+}
+</code></pre></pre>
+<p>This is incredibly easy to use
+for which you of course surrender configurability.
+But if a simple config is all you want,
+this crate might be for you!</p>
+<a class="header" href="print.html#configuration-environments" id="configuration-environments"><h2>Configuration environments</h2></a>
+<aside class="todo">
+<p><strong>TODO</strong></p>
+<ol>
+<li>Evaluate crates that exist</li>
+<li>Cli-args + multiple configs + env variables</li>
+<li>Can <code>configure</code> do all this? Is there a nice wrapper around it?</li>
+</ol>
+</aside><a class="header" href="print.html#exit-codes" id="exit-codes"><h1>Exit codes</h1></a>
+<p>A program doesn’t always succeed.
+And when an error occurs,
+you should make sure to emit the necessary information correctly.
+In addition to
+<a href="./in-depth/human-communication.html">telling the user about errors</a>,
+on most systems,
+when a process exits,
+it also emits an exit code
+(an integer between 0 and 255 is compatible with most platforms).
+You should try to emit the correct code
+for your program’s state.
+For example,
+in the ideal case when your program succeeds,
+it should exit with <code>0</code>.</p>
+<p>When an error occurs, it gets a bit more complicated, though.
+In the wild,
+a lot of tools exit with <code>1</code> when a general failure ocurred.
+Currently, Rust set and exit code of <code>101</code> when the process panicked.
+Beyond that, people have done many things in their programs.</p>
+<p>So, what to do?
+The BSD ecosystem has collected a common definition for their exit codes
+(you can find them <a href="https://www.freebsd.org/cgi/man.cgi?query=sysexits&amp;apropos=0&amp;sektion=0&amp;manpath=FreeBSD+11.2-stable&amp;arch=default&amp;format=html">here</a>).
+The Rust library <a href="https://crates.io/crates/exitcode"><code>exitcode</code></a> provides these same codes,
+ready to be used in your application.
+Please see its API documentation for the possible values to use.</p>
+<p>One way to use it is like this:</p>
+<pre><pre class="playpen"><code class="language-rust">fn main() {
+    // ...actual work...
+    match result {
+        Ok(_) =&gt; {
+            println!(&quot;Done!&quot;);
+            std::process::exit(exitcode::OK);
+        }
+        Err(CustomError::CantReadConfig(e)) =&gt; {
+            eprintln!(&quot;Error: {}&quot;, e);
+            std::process::exit(exitcode::CONFIG);
+        }
+        Err(e) =&gt; {
+            eprintln!(&quot;Error: {}&quot;, e);
+            std::process::exit(exitcode::DATAERR);
+        }
+    }
+}
+</code></pre></pre>
+<a class="header" href="print.html#communicating-with-humans" id="communicating-with-humans"><h1>Communicating with humans</h1></a>
+<a class="header" href="print.html#when-everything-is-fine" id="when-everything-is-fine"><h2>When everything is fine</h2></a>
+<p>It is useful to report on the application’s progress
+even when everything is fine.
+Try to be informative and concise in these messages.
+Don’t use overly technical terms in the logs.
+Remember:
+the application is not crashing
+so there’s no reason for users to look up errors.</p>
+<p>Most importantly,
+be consistent in the style of communication.
+Use the same prefixes and sentence structure
+to make the logs easily skimmable.</p>
+<p>Try to let your application output tell a story
+about what it’s doing
+and how it impacts the user.
+This can involve showing a timeline of steps involved
+or even a progress bar and indicator for long running actions.
+The user should at no point
+get the feeling that the application is doing something mysterious
+that they cannot follow.</p>
+<a class="header" href="print.html#when-its-hard-to-tell-whats-going-on" id="when-its-hard-to-tell-whats-going-on"><h2>When it’s hard to tell what’s going on</h2></a>
+<p>When communicating non-nominal state it’s important to be consistent.
+A heavily logging application that doesn’t follow strict logging levels
+provides the same amount, or even less information
+than a non-logging application.</p>
+<p>Because of this it’s important to define the severity of events
+and messages that are related to it;
+then use consistent log levels for them.
+This way users can select the amount of logging themselves
+via <code>--verbose</code> flags
+or environment variables (like <code>RUST_LOG</code>).</p>
+<p>The commonly used <code>log</code> crate
+<a href="https://docs.rs/log/0.4.4/log/enum.Level.html">defines</a> the following levels
+(ordered by increasing severity):</p>
+<ul>
+<li>trace</li>
+<li>debug</li>
+<li>info</li>
+<li>warning</li>
+<li>error</li>
+</ul>
+<p>It’s a good idea to think of <em>info</em> as the default log level.
+Use it for, well, informative output.
+(Some applications that lean towards a more quiet output style
+might only show warnings and errors by default.)</p>
+<p>Additionally it’s always a good idea to use similar prefixes
+and sentence structure across log messages,
+making it easy to <code>grep</code> or filter for them.
+A message should provide enough context by itself
+to be useful in a filtered log
+while not being <em>too</em> verbose at the same time.</p>
+<a class="header" href="print.html#example-log-statements" id="example-log-statements"><h3>Example log statements</h3></a>
+<pre><code>error: could not find `Cargo.toml` in `/home/you/project/`
+</code></pre>
+<pre><code>=&gt; Downloading repository index
+=&gt; Downloading packages...
+</code></pre>
+<p>The following log output is taken from <a href="https://crates.io/crates/wasm-pack">wasm-pack</a>:</p>
+<pre><code> [1/7] Adding WASM target...
+ [2/7] Compiling to WASM...
+ [3/7] Creating a pkg directory...
+ [4/7] Writing a package.json...
+ &gt; [WARN]: Field `description` is missing from Cargo.toml. It is not necessary, but recommended
+ &gt; [WARN]: Field `repository` is missing from Cargo.toml. It is not necessary, but recommended
+ &gt; [WARN]: Field `license` is missing from Cargo.toml. It is not necessary, but recommended
+ [5/7] Copying over your README...
+ &gt; [WARN]: origin crate has no README
+ [6/7] Installing WASM-bindgen...
+ &gt; [INFO]: wasm-bindgen already installed
+ [7/7] Running WASM-bindgen...
+ Done in 1 second
+</code></pre>
+<a class="header" href="print.html#when-panicking" id="when-panicking"><h2>When panicking</h2></a>
+<p>One aspect often forgotten is that
+your program also outputs something when it crashes.
+In Rust, “crashes” are most often “panics”
+(i.e., “controlled crashing”
+in contrast to “the operating system killed the process”).
+By default,
+when a panic occurs,
+a “panic handler” will print some information to the console.</p>
+<p>For example,
+if you create a new binary project
+with <code>cargo new --bin foo</code>
+and replace the content of <code>fn main</code> with <code>panic!(&quot;Hello World&quot;)</code>,
+you get this when you run your program:</p>
+<pre><code class="language-console">thread 'main' panicked at 'Hello, world!', src/main.rs:2:5
+note: Run with `RUST_BACKTRACE=1` for a backtrace.
+</code></pre>
+<p>This is useful information to you, the developer.
+(Surprise: the program crashed because of line 2 in your <code>main.rs</code> file).
+But for a user who doesn’t even have access to the source code,
+this is not very valuable.
+In fact, it most likely is just confusing.
+That’s why it’s a good idea to add a custom panic handler,
+that provides a bit more end-user focussed output.</p>
+<p>One library that does just that is called <a href="https://crates.io/crates/human-panic">human-panic</a>.
+To add it to your CLI project,
+you import it
+and call the <code>setup_panic!()</code> macro
+at the beginning of your <code>main</code> function:</p>
+<pre><pre class="playpen"><code class="language-rust">use human_panic::setup_panic;
+
+fn main() {
+   setup_panic!();
+
+   panic!(&quot;Hello world&quot;)
+}
+</code></pre></pre>
+<p>This will now show a very friendly message,
+and tells the user what they can do:</p>
+<pre><code class="language-console">Well, this is embarrassing.
+
+foo had a problem and crashed. To help us diagnose the problem you can send us a crash report.
+
+We have generated a report file at &quot;/var/folders/n3/dkk459k908lcmkzwcmq0tcv00000gn/T/report-738e1bec-5585-47a4-8158-f1f7227f0168.toml&quot;. Submit an issue or email with the subject of &quot;foo Crash Report&quot; and include the report as an attachment.
+
+- Authors: Your Name &lt;your.name@example.com&gt;
+
+We take privacy seriously, and do not perform any automated error collection. In order to improve the software, we rely on people to submit reports.
+
+Thank you kindly!
+</code></pre>
+<a class="header" href="print.html#communicating-with-machines" id="communicating-with-machines"><h1>Communicating with machines</h1></a>
+<a class="header" href="print.html#rendering-documentation-for-you-cli-apps" id="rendering-documentation-for-you-cli-apps"><h1>Rendering documentation for you CLI apps</h1></a>
+<p>Documentation for CLIs usually consists of
+a <code>--help</code> section in the command
+and a manual (<code>man</code>) page.</p>
+<p>Both can be automatically generated
+when using <code>clap</code>,
+via the <code>man</code> backend.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[derive(Clap)]
+pub struct Head {
+    /// file to load
+    #[clap(parse(from_os_str))]
+    pub file: PathBuf,
+    /// how many lines to print
+    #[clap(short = &quot;n&quot;, default_value = &quot;5&quot;)]
+    pub count: usize,
+}
+#}</code></pre></pre>
+<p>Secondly, you need to use a <code>build.rs</code>
+to generate the manual file at compile-time
+from the definition of your app
+in code.</p>
+<p>There are a few things to keep in mind
+(such as how you want to package your binary)
+but for now
+we simply put the <code>man</code> file
+next to our <code>src</code> folder.</p>
+<pre><pre class="playpen"><code class="language-rust">extern crate clap;
+extern crate clap_generate;
+
+#[path=&quot;src/cli.rs&quot;]
+mod cli;
+
+fn main() {
+    use clap::IntoApp;
+    let app = cli::Head::into_app();
+
+    use clap_generate::gen_manuals;
+    for man in gen_manuals(&amp;app) {
+        let name = &quot;head.1&quot;;
+        let mut out = fs::File::create(&quot;head.1&quot;).unwrap();
+        use std::io::Write;
+        out.write_all(man.render().as_bytes()).unwrap();
+    }
+}
+</code></pre></pre>
+<p>When you now compile your application
+there will be a <code>head.1</code> file
+in your project directory.</p>
+<p>If you open that in <code>man</code>
+you’ll be able to admire your free documentation.</p>
+<a class="header" href="print.html#packaging-apps-and-distributing-them-for-different-platforms" id="packaging-apps-and-distributing-them-for-different-platforms"><h1>Packaging apps and distributing them for different platforms</h1></a>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
+        
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+        
+        
+
+    </body>
+</html>
